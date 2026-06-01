@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시그니처 미션판</title>
+    <style>
+        body {
+            background-color: #f7f9fa;
+            font-family: 'Malgun Gothic', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* 메인 판 컨테이너 */
+        .board-container {
+            width: 100%;
+            max-width: 800px;
+            background: #ffffff;
+            border: 4px solid #ffdae0;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 상단 타이틀 배너 */
+        .board-header {
+            background: #ffffff;
+            border: 2px solid #ffdae0;
+            border-radius: 8px;
+            text-align: center;
+            padding: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #ff6b8b;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        /* 5열 그리드 레이아웃 */
+        .grid-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        /* 카드 3D 효과를 위한 부모 설정 */
+        .card-slot {
+            aspect-ratio: 4 / 3;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        /* 카드 자체 */
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 클릭되어 뒤집힌 상태 */
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* 앞면 & 뒷면 공통 스타일 */
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            box-sizing: border-box;
+            border: 2px solid #ffdae0;
+        }
+
+        /* [앞면] 숫자 패널 */
+        .card-front {
+            background-color: #fff5f7;
+            color: #ffb3c6;
+            font-size: 24px;
+            text-shadow: 1px 1px 0px #fff, -1px -1px 0px #fff, 1px -1px 0px #fff, -1px 1px 0px #fff;
+        }
+        
+        .card-front:hover {
+            background-color: #ffe5ec;
+        }
+
+        /* [뒷면] 공개된 상품 패널 */
+        .card-back {
+            background-color: #2c2c2c;
+            color: #ffffff;
+            font-size: 16px;
+            transform: rotateY(180deg);
+            text-align: center;
+            padding: 5px;
+        }
+
+        /* 미션 완료(SOLD OUT) 스타일 */
+        .card-back.sold-out {
+            background-color: #1a1a1a;
+            color: #ff4d6d;
+            font-size: 18px;
+            text-transform: uppercase;
+            border: 2px solid #ff4d6d;
+        }
+        
+        .sold-out-text {
+            transform: rotate(-15deg);
+            border: 2px solid #ff4d6d;
+            padding: 2px 6px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="board-container">
+    <div class="board-header">
+        역팬 천개, 남남 10, 남남1, 움짤방셀
+    </div>
+
+    <div class="grid-board" id="gridBoard"></div>
+</div>
+
+<script>
+    // 판에 들어갈 데이터 정의 (5x5 = 총 25개)
+    // type이 'soldout'이면 붉은색 스탬프 효과, 'normal'이면 검은 배경에 흰 글씨로 나옵니다.
+    const panelData = [
+        { id: "772",  type: "soldout", content: "SOLD OUT" },
+        { id: "1000", type: "soldout", content: "SOLD OUT" },
+        { id: "1001", type: "soldout", content: "SOLD OUT" },
+        { id: "10005",type: "soldout", content: "SOLD OUT" },
+        { id: "10011",type: "soldout", content: "SOLD OUT" },
+        
+        { id: "1032", type: "soldout", content: "SOLD OUT" },
+        { id: "1081", type: "normal",  content: "배민 10" },
+        { id: "1086", type: "normal",  content: "치킨 기프티콘" },
+        { id: "1087", type: "normal",  content: "다음 기회에" },
+        { id: "1099", type: "normal",  content: "퀵뷰 30일" },
+        
+        { id: "1132", type: "soldout", content: "SOLD OUT" },
+        { id: "10130",type: "soldout", content: "SOLD OUT" },
+        { id: "10295",type: "soldout", content: "SOLD OUT" },
+        { id: "????", type: "soldout", content: "SOLD OUT" },
+        { id: "1587", type: "normal",  content: "문화상품권" },
+        
+        { id: "1725", type: "normal",  content: "초콜릿 우유" },
+        { id: "????", type: "normal",  content: "역팬 1000개" },
+        { id: "1813", type: "normal",  content: "방셀 1회" },
+        { id: "1825", type: "normal",  content: "다음 기회에" },
+        { id: "1857", type: "normal",  content: "별풍선 100개" },
+        
+        { id: "2000", type: "normal",  content: "시그니처 리액션" },
+        { id: "29917",type: "soldout", content: "SOLD OUT" },
+        { id: "2082", type: "normal",  content: "다음 기회에" },
+        { id: "2111", type: "normal",  content: "소원권" },
+        { id: "3000", type: "normal",  content: "레전드 방셀" }
+    ];
+
+    const gridBoard = document.getElementById('gridBoard');
+
+    // 화면에 카드 생성 및 배치
+    panelData.forEach(item => {
+        const slot = document.createElement('div');
+        slot.className = 'card-slot';
+
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        // 앞면 (숫자)
+        const front = document.createElement('div');
+        front.className = 'card-face card-front';
+        front.innerText = item.id;
+
+        // 뒷면 (상품/결과)
+        const back = document.createElement('div');
+        back.className = 'card-face card-back';
+        
+        if (item.type === 'soldout') {
+            back.classList.add('sold-out');
+            back.innerHTML = `<span class="sold-out-text">SOLD OUT</span>`;
+        } else {
+            back.innerText = item.content;
+        }
+
+        // 조립
+        card.appendChild(front);
+        card.appendChild(back);
+        slot.appendChild(card);
+        gridBoard.appendChild(slot);
+
+        // 클릭 이벤트: 뒤집기 토글
+        slot.addEventListener('click', () => {
+            card.classList.toggle('flipped');
+        });
+    });
+</script>
+
+</body>
+</html>
