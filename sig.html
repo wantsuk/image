@@ -84,39 +84,53 @@
             border: 2px solid #ffdae0;
         }
 
-        /* [앞면] 숫자 패널 구조 유지 + 흐린 배경 이미지 추가 */
+        /* [앞면] 구조 유지 */
         .card-front {
             background-color: #fff5f7;
-            color: #ff4d79; /* 흐린 배경 위에서 숫자가 잘 보이도록 색상을 살짝 진하게 조정 */
+            color: #ff4d79;
             font-size: 24px;
             text-shadow: 2px 2px 0px #fff, -2px -2px 0px #fff, 2px -2px 0px #fff, -2px 2px 0px #fff;
-            
             position: relative;
             overflow: hidden;
             z-index: 1;
         }
 
-        /* 📸 카드 앞면 패널 안에만 배경 이미지를 넣고 블러 처리 */
+        /* 💥여기가 핵심: 카드 앞면에만 연한 격자무늬 넣기 */
         .card-front::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             
-            /* 1. 여기에 저장소에 올리신 이미지 경로와 파일명을 적어주세요 (예: bg.png) */
+            /* 1. 이미지 없이 가상으로 핑크색 연한 격자 격자무늬 생성 */
+            background-image: 
+                linear-gradient(rgba(255, 179, 198, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 179, 198, 0.15) 1px, transparent 1px);
+            background-size: 10px 10px; /* 격자 크기 조절 */
+            
+            /* 2. 기존 배경 이미지를 쓰고 싶을 때를 대비해 블러는 유지 */
             background-image: url('../bg.jpg'); 
             background-size: cover;
             background-position: center;
-            
-            /* 2. 흐림(blur) 강도와 밝기(brightness)를 조절하는 구역입니다 */
             filter: blur(4px) brightness(0.85); 
-            transform: scale(1.15); /* 블러 처리 시 테두리가 하얗게 뜨는 현상 방지 */
-            z-index: -1; /* 숫자가 이미지 뒤에 묻히지 않도록 뒤로 밀어냄 */
-            transition: background-color 0.2s;
+            transform: scale(1.15);
+            
+            z-index: -1;
+            transition: opacity 0.2s;
         }
         
-        /* 마우스 올렸을 때(Hover) 살짝 밝아지는 효과 */
-        .card-front:hover::before {
-            filter: blur(4px) brightness(0.95);
+        /* 격자무늬 위에 덧씌워지는 은은한 그라데이션 */
+        .card-front::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(255, 179, 198, 0.15) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 179, 198, 0.15) 1px, transparent 1px);
+            background-size: 12px 12px;
+            z-index: -1;
+        }
+        
+        .card-front:hover {
+            background-color: #ffe5ec;
         }
 
         /* [뒷면] 공개된 상품 패널 */
@@ -158,7 +172,6 @@
 </div>
 
 <script>
-    // 판에 들어갈 데이터 정의 (5x5 = 총 25개)
     const panelData = [
         { id: "1155",  type: "soldout", content: "SOLD OUT" },
         { id: "1000", type: "soldout", content: "SOLD OUT" },
@@ -175,11 +188,11 @@
         { id: "1132", type: "soldout", content: "SOLD OUT" },
         { id: "10130",type: "soldout", content: "SOLD OUT" },
         { id: "10295",type: "soldout", content: "SOLD OUT" },
-        { id: "28249", type: "soldout", content: "SOLD OUT" },
+        { id: "????", type: "soldout", content: "SOLD OUT" },
         { id: "1587", type: "normal",  content: "배민1만원" },
         
         { id: "1725", type: "normal",  content: "퀵뷰1주일" },
-        { id: "2000", type: "normal",  content: "역팬 1000개" },
+        { id: "????", type: "normal",  content: "역팬 1000개" },
         { id: "1813", type: "normal",  content: "방셀 1회" },
         { id: "1825", type: "normal",  content: "다음 기회에" },
         { id: "1857", type: "normal",  content: "별풍선 100개" },
@@ -193,7 +206,6 @@
 
     const gridBoard = document.getElementById('gridBoard');
 
-    // 화면에 카드 생성 및 배치
     panelData.forEach(item => {
         const slot = document.createElement('div');
         slot.className = 'card-slot';
@@ -201,12 +213,10 @@
         const card = document.createElement('div');
         card.className = 'card';
 
-        // 앞면 (숫자)
         const front = document.createElement('div');
         front.className = 'card-face card-front';
         front.innerText = item.id;
 
-        // 뒷면 (상품/결과)
         const back = document.createElement('div');
         back.className = 'card-face card-back';
         
@@ -217,13 +227,11 @@
             back.innerText = item.content;
         }
 
-        // 조립
         card.appendChild(front);
         card.appendChild(back);
         slot.appendChild(card);
         gridBoard.appendChild(slot);
 
-        // 클릭 이벤트: 뒤집기 토글
         slot.addEventListener('click', () => {
             card.classList.toggle('flipped');
         });
