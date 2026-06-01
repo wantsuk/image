@@ -84,16 +84,39 @@
             border: 2px solid #ffdae0;
         }
 
-        /* [앞면] 숫자 패널 */
+        /* [앞면] 숫자 패널 구조 유지 + 흐린 배경 이미지 추가 */
         .card-front {
             background-color: #fff5f7;
-            color: #ffb3c6;
+            color: #ff4d79; /* 흐린 배경 위에서 숫자가 잘 보이도록 색상을 살짝 진하게 조정 */
             font-size: 24px;
-            text-shadow: 1px 1px 0px #fff, -1px -1px 0px #fff, 1px -1px 0px #fff, -1px 1px 0px #fff;
+            text-shadow: 2px 2px 0px #fff, -2px -2px 0px #fff, 2px -2px 0px #fff, -2px 2px 0px #fff;
+            
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* 📸 카드 앞면 패널 안에만 배경 이미지를 넣고 블러 처리 */
+        .card-front::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            
+            /* 1. 여기에 저장소에 올리신 이미지 경로와 파일명을 적어주세요 (예: bg.png) */
+            background-image: url('../bg.jpg'); 
+            background-size: cover;
+            background-position: center;
+            
+            /* 2. 흐림(blur) 강도와 밝기(brightness)를 조절하는 구역입니다 */
+            filter: blur(4px) brightness(0.85); 
+            transform: scale(1.15); /* 블러 처리 시 테두리가 하얗게 뜨는 현상 방지 */
+            z-index: -1; /* 숫자가 이미지 뒤에 묻히지 않도록 뒤로 밀어냄 */
+            transition: background-color 0.2s;
         }
         
-        .card-front:hover {
-            background-color: #ffe5ec;
+        /* 마우스 올렸을 때(Hover) 살짝 밝아지는 효과 */
+        .card-front:hover::before {
+            filter: blur(4px) brightness(0.95);
         }
 
         /* [뒷면] 공개된 상품 패널 */
@@ -136,7 +159,6 @@
 
 <script>
     // 판에 들어갈 데이터 정의 (5x5 = 총 25개)
-    // type이 'soldout'이면 붉은색 스탬프 효과, 'normal'이면 검은 배경에 흰 글씨로 나옵니다.
     const panelData = [
         { id: "1155",  type: "soldout", content: "SOLD OUT" },
         { id: "1000", type: "soldout", content: "SOLD OUT" },
