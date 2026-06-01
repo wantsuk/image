@@ -95,30 +95,20 @@
             z-index: 1;
         }
 
-        /* 💥여기가 핵심: 카드 앞면에만 연한 격자무늬 넣기 */
+        /* 📸 카드 앞면 배경 이미지 구역 */
         .card-front::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            
-            /* 1. 이미지 없이 가상으로 핑크색 연한 격자 격자무늬 생성 */
-            background-image: 
-                linear-gradient(rgba(255, 179, 198, 0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 179, 198, 0.15) 1px, transparent 1px);
-            background-size: 10px 10px; /* 격자 크기 조절 */
-            
-            /* 2. 기존 배경 이미지를 쓰고 싶을 때를 대비해 블러는 유지 */
             background-image: url('../bg.jpg'); 
             background-size: cover;
             background-position: center;
             filter: blur(4px) brightness(0.85); 
             transform: scale(1.15);
-            
-            z-index: -1;
-            transition: opacity 0.2s;
+            z-index: -2; /* 무늬보다 뒤에 깔리도록 수정 */
         }
         
-        /* 격자무늬 위에 덧씌워지는 은은한 그라데이션 */
+        /* 💥 에러 해결: 무늬 레이어가 밀리지 않도록 absolute 붕 띄워 고정 */
         .card-front::after {
             content: "";
             position: absolute;
@@ -126,7 +116,8 @@
             background: linear-gradient(rgba(255, 179, 198, 0.15) 1px, transparent 1px),
                         linear-gradient(90deg, rgba(255, 179, 198, 0.15) 1px, transparent 1px);
             background-size: 12px 12px;
-            z-index: -1;
+            z-index: -1; /* 숫자보다는 뒤에 위치 */
+            pointer-events: none;
         }
         
         .card-front:hover {
@@ -135,6 +126,8 @@
 
         /* [뒷면] 공개된 상품 패널 */
         .card-back {
+            position: absolute; /* 확실하게 제자리 고정 */
+            top: 0; left: 0; width: 100%; height: 100%;
             background-color: #2c2c2c;
             color: #ffffff;
             font-size: 16px;
