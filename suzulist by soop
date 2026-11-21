@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>💎 냥냥수주 시그 리스트 💎</title>
+    <style>
+        /* 깔끔한 고딕체 폰트 설정 및 청량한 파스텔 스카이 배경 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #eef7ff;
+            padding: 20px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid #90caf9;
+            box-shadow: 0 4px 15px rgba(25, 118, 210, 0.08);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1976d2;
+            margin-bottom: 20px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        /* 검색창: 군더더기 없이 깔끔하게 */
+        #search {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #e3f2fd;
+            border-radius: 10px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        #search:focus {
+            border-color: #64b5f6;
+            background-color: #f3f9ff;
+        }
+
+        /* 리스트 영역 */
+        #result-list {
+            height: 650px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .song-item {
+            padding: 10px;
+            border-bottom: 1px solid #e3f2fd;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .song-item:hover {
+            background-color: #f3f9ff;
+        }
+
+        /* 번호와 제목 구분 */
+        .song-num {
+            font-weight: 700;
+            color: #1976d2;
+            width: 55px;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .song-title {
+            font-weight: 500;
+            color: #444;
+        }
+
+        /* 스크롤바 디자인 */
+        #result-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        #result-list::-webkit-scrollbar-thumb {
+            background: #64b5f6;
+            border-radius: 10px;
+        }
+
+        /* 실제 화면에서는 원본 텍스트 영역 숨김 */
+        #raw-list {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>💎 냥냥수주 시그 리스트 💎</h2>
+    <input type="text" id="search" onkeyup="doSearch()" placeholder="검색어를 입력하세요 (번호나 제목)" autofocus>
+    <div id="result-list"></div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- 👇👇👇 여기 아래에 시그 리스트를 한 줄에 하나씩 쭉 붙여넣으세요 👇👇👇 -->
+<!-- 예시 형식: 100 첫 번째 시그니처  또는  100 - 첫 번째 시그니처        -->
+<!-- ===================================================================== -->
+<textarea id="raw-list">
+90 이쁜이는뒤를돌아봅니다
+91 OK OK
+92 SELFIE
+93 간밧떼
+94 꼬끼오
+95 Let Me Know
+96 햄토리
+97 캐치캐치
+98 귀여운 나예요
+99 L을가져가
+100 404(New Era)
+102 붐샤카라카
+103 누나야
+104 오버드라이브
+105 괜찮아딩딩딩
+106 리브잇업
+107 L.O.V.I.P
+108 꼬마 선장
+109 Pop Off Pop Off
+110 이안챌린지
+111 복고댄스
+112 시바라스고
+113 첫눈
+114 12345678
+115 외모체크
+116 옴브리뉴
+117 카리나닮았대
+118 딱풀
+119 교통정리
+120 레디올낫
+121 포켓몬
+122 너와의모든지금
+123 모찌송
+124 핫해
+125 컴온!
+126 이머전시
+127 슈퍼그럼요
+128 팬서비스
+129 펌업더볼륨
+130 사랑받을준비완료
+131 푸른산호초
+132 나랑사귈래
+133 귀여워서미안해
+134 솜사탕
+135 불나비
+136 like JENNIE
+137 짧은치마
+138 숏 라부부
+139 Stack It Up
+140 붐붐베이스
+141 잇츠미
+142 웨이백홈
+143 LEMONADE
+144 트라그
+145 Lemon Tang
+146 청바지
+147 짠쿵쾅
+148 홀드업
+149 눈물참기
+150 넘나좋은것
+151 푱푱
+152 슈파도파
+153 로우로우로우
+154 킥드베
+155 풍덩
+156 테디베어
+157 이뻐이뻐
+158 자기야화풀어
+159 무아
+160 아로아로
+161 킹받으면 좋겠어
+162 더기스웩
+163 GG EZ
+164 BAD
+165 위고
+166 고민중독
+167 오빠바이러스
+168 어마어마해
+169 APT
+170 NO BATIDAO
+171 MOVE
+172 내가S면넌나의N이되어줘
+173 HIGHER
+174 트월킹 덕
+175 All I Wanna Do
+176 오빠달려붕붕
+177 바니바니
+178 아이스크림
+179 Holy Moly
+180 탕탕타랑
+181 매니악
+182 쌔끈빠끈
+183 게이바
+184 너는조려야돼
+185 홈스윗홈
+186 웃어
+187 퇴사할게여
+188 Gravity
+189 도마도마
+190 REDRED
+191 Ring Ring
+192 연애의 조건
+193 파라파라
+194 간바레센빠이
+195 결국 너야
+196 체포하겠어
+197 STYLE
+198 왜요 왜요
+199 러브쉐이크
+200 핑크레이디
+201 이쿠욧
+202 코카인
+203 헤비머신건
+204 잭슨
+205 NICOTEEN
+206 체온
+207 주차금지
+208 네모네모
+209 틱택
+210 Mi Chico
+211 xxl
+212 샤넬
+213 힙합보단 사랑 사랑보단 돈
+214 롱 라부부
+215 BiiiG
+217 바우치
+218 Supersonic
+219 건사피장
+220 디토
+221 야몽음인
+222 Touch my body
+223 레제
+224 슬램덩크
+225 Random Switch
+226 벌룬인럽
+227 빌려온고양이
+228 아헤가오
+229 버터플라이
+230 뻐킹뱅어
+231 지금우리
+232 Purple Lamborghini
+233 I Feel Good
+234 우유
+235 헨타이
+236 샤카보
+237 THATs A NO NO
+238 하얀그리움
+239 LOVE ATTACK
+240 LSD
+241 사건의 지평선
+242 인더클럽
+243 엉큰녀
+244 호영레이블
+245 Kiss remix
+246 여름이었다
+247 GUAP
+248 공주들아
+249 사마귀
+250 나루토
+251 촉촉착착
+252 NOT LIKE US
+253 Gravity remix
+254 스키스키
+255 뱅뱅
+256 반해
+257 슈퍼노바
+258 빛을따라서
+259 스티키
+260 팅커벨
+261 코끼리다리
+262 센세
+263 거짓말
+264 Fiesta Loca
+265 미국가있어
+266 너뿐이야
+267 마그네틱
+268 레비테이팅
+269 Steps
+270 가솔린바운스
+271 새드썸타임
+272 우치다
+273 할 것
+274 포카치고
+275 패스트카
+276 미리 메리 크리스마스
+277 싸이코
+278 댄스컨트롤
+279 As I Love You
+280 Morro Den De
+282 Pretty Girl
+286 오빠하앙
+289 럼블
+295 에헤헤
+300 WOP
+310 영보스
+312 비상사태
+321 캡틴티모
+323 살리고 달리고
+330 라타타
+333 DRUMS
+334 Lost Control
+337 Hype Boy
+338 청신호
+348 1995
+350 아빠와크레파스
+352 Big Love
+360 Candy Thief
+364 체인투더리듬
+370 삐끼삐끼
+377 완전히 마 살아있네
+380 U Make Me
+389 파티트레인
+400 오프더레코드
+410 스테이
+420 풍맛달달
+424 Payphone
+430 초월
+444 파파파
+450 Light It Up
+459 Lunisolar
+480 이너프
+485 금요일 밤에
+498 Love Is Gone
+500 Fighter
+501 에브리타임위터치
+505 Moonlight
+510 호텔파티
+515 좋았어 영차
+530 웬아이겟올드
+540 Comthru
+542 Flower
+545 출항
+550 터미널
+552 Highest
+556 슈퍼 복고댄스
+560 Rewrite The Stars
+570 스피드쉬프트
+600 Faded
+616 Avalon
+650 Viva La Vida
+697 슈퍼엉큰녀
+700 아자스
+770 작은 레스고
+777 Ass Up
+788 Sad Boy
+800 Play
+900 Zero Ease
+1000 지코토닉
+1001 리파
+1002 만두
+1003 #아리
+1004 바닐라
+1005 사이토
+1006 SH
+1007 홍콩오라버니
+1008 업타운펑크
+1009 빠땀빠땀
+1010 왕이사
+1011 욱찌
+1012 현
+1013 쌕쌕
+1014 레오
+1015 전재산
+1016 달빛
+1018 오빠
+1019 파이널러브송
+1020 소주한잔
+1021 진중먕
+1022 감자박
+1023 Kpop
+1024 작은 히동
+1025 이그나이트
+1026 반야심경
+1027 크레이지러브
+1028 No Man No Cry
+1029 까스댄스댄스
+1038 광땡
+1044 리멤버 더 서머
+1045 루피L
+1046 My Life
+1047 김마루
+1051 Lovesick
+1052 유저
+1053 David
+1054 다크사이드
+1061 베어
+1062 쭈잉
+1067 덥스텝
+1078 creed
+1079 철박
+1081 backbo
+1082 소년
+1083 라곱째
+1089 섹시영민
+1090 만개화
+1092 착한사람
+1099 개굴
+1100 훈풍
+1101 레츠고
+1102 반포대교
+1111 대나무
+1117 Stars
+1121 IF
+1123 토마스열차
+1125 바겐
+1147 분수쇼
+1148 저점매수자
+1150 Where We Are
+1158 도파민
+1161 APM
+1173 Holdin On
+1187 아트모스피어
+1188 슈퍼 솜사탕
+1191 슈퍼스모크
+1199 ROY
+1200 크리스
+1212 도적12
+1220 Dont Let me down
+1225 교도소
+1233 Choose Your Fighter
+1235 팔로우미
+1240 Legends Never Die
+1249 별이 되어줘
+1263 타이미다운
+1278 리얼마에스트로
+1280 슈퍼뻐킹뱅어
+1442 살아있네
+1523 타츠야
+1596 올드타운로드
+1622 원숭이잉
+1770 레스고
+1778 냠냠
+1825 Violet
+1879 Killa
+2000 핸즈클랩
+2001 Heroes
+2002 마티니
+2005 사기캐
+2008 슈퍼 감자박
+2009 디스코테카
+2011 계엄령
+2012 Love me or Leave me
+2051 불금
+2081 큰 소년
+2098 큰 히동
+2100 폭풍
+2162 슈퍼 사이토
+2199 슈퍼 ROY
+2444 싸싸
+2620 오빠왔다
+2622 제천대성
+2778 클라노이드
+2879 슈퍼핵펀치
+3000 킹갓제너럴
+5000 Someone You Loved
+5262 슈퍼핵솜사탕
+5500 대불금
+6000 Lights
+10000 Like I Do
+20000 VVIP
+30000 Jesus Christ
+
+열혈시그
+1010-홀이개
+1016-나요개
+1074-치수개
+1023-하루개
+1055 -윈드세븐
+1056-디디개
+1079-친해개
+1082-구치리개
+1100-리드개
+1155-하늘개
+1220-팩트개
+1875-반조흐개
+2875-큰반조흐개
+</textarea>
+<!-- ===================================================================== -->
+<!-- 👆👆👆 여기 위까지만 리스트를 붙여넣으세요 👆👆👆                     -->
+<!-- ===================================================================== -->
+
+<script>
+    function parseRawList() {
+        const rawText = document.getElementById("raw-list").value;
+        const lines = rawText.split(/\r?\n/);
+        const parsed = [];
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+            if (!trimmed) return;
+
+            // 앞부분의 숫자/번호와 뒤의 제목을 분리 (예: "100 제목" 또는 "100 - 제목" 또는 "100: 제목")
+            const match = trimmed.match(/^([A-Za-z0-9_-]+)\s*[-:|.]?\s*(.*)$/);
+            if (match && match[2]) {
+                parsed.push({
+                    num: match[1],
+                    title: match[2].trim()
+                });
+            } else {
+                parsed.push({
+                    num: "-",
+                    title: trimmed
+                });
+            }
+        });
+
+        return parsed;
+    }
+
+    const sigList = parseRawList();
+
+    function renderList(items) {
+        const resultList = document.getElementById("result-list");
+        resultList.innerHTML = "";
+
+        if (items.length === 0) {
+            resultList.innerHTML = '<div class="song-item"><span class="song-title">검색 결과가 없습니다.</span></div>';
+            return;
+        }
+
+        items.forEach(item => {
+            const row = document.createElement("div");
+            row.className = "song-item";
+            row.innerHTML = `<span class="song-num">${item.num}</span><span class="song-title">${item.title}</span>`;
+            resultList.appendChild(row);
+        });
+    }
+
+    function doSearch() {
+        const query = document.getElementById("search").value.trim().toLowerCase();
+        if (!query) {
+            renderList(sigList);
+            return;
+        }
+
+        const filtered = sigList.filter(item =>
+            String(item.num).toLowerCase().includes(query) ||
+            String(item.title).toLowerCase().includes(query)
+        );
+        renderList(filtered);
+    }
+
+    renderList(sigList);
+</script>
+
+</body>
+</html>
